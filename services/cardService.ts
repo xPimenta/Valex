@@ -63,7 +63,7 @@ export async function updateCard(
   cardRepository.update(id, cardData)
 }
 
-export async function gatherCardDetails(cardId: number) {
+export async function gatherCardBalanceAndStatements(cardId: number) {
   interface cardBalanceAndStatements {
     balance: number
     transactions: paymentRepository.PaymentWithBusinessName[]
@@ -89,14 +89,14 @@ export function calculateCardBalance(
 ) {
   const totalRecharge = recharges.reduce(
     (acc: number, current: { amount: number }) => {
-      return current.amount
+      return acc + current.amount
     },
     0,
   )
 
   const totalSpent = payments.reduce(
     (acc: number, current: { amount: number }) => {
-      return current.amount
+      return acc + current.amount
     },
     0,
   )
