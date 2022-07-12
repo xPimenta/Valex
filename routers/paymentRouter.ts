@@ -1,28 +1,43 @@
 import { Router } from "express"
 
 import { insertPayment } from "../controllers/paymentController.js"
-import { checkIfBusinessMatchCardType } from "../middlewares/checkIfBusinessMatchCardType.js"
-import { ensureBusinessExists } from "../middlewares/ensureBusinessExists.js"
-import { ensureCardExists } from "../middlewares/ensureCardExists.js"
-import { ensureCardIsActivated } from "../middlewares/ensureCardIsActivated.js"
-import { ensureCardIsNotBlocked } from "../middlewares/ensureCardIsNotBlocked.js"
-import { ensureCardIsNotExpired } from "../middlewares/ensureCardIsNotExpired.js"
-import { validateCardPassword } from "../middlewares/validateCardPassword.js"
+import { card } from "../middlewares/cardMiddleware.js"
+import { business } from "../middlewares/businessMiddleware.js"
 import { validateSchema } from "../middlewares/validateSchema.js"
-import { paymentSchema } from "../schemas/paymentSchema.js"
+import {
+  onlinePaymentSchema,
+  paymentSchema,
+} from "../schemas/paymentSchemas.js"
 
 const paymentRouter = Router()
 
 paymentRouter.post(
   "/payment",
   validateSchema(paymentSchema),
-  ensureCardExists,
-  ensureCardIsActivated,
-  ensureCardIsNotExpired,
-  ensureCardIsNotBlocked,
-  validateCardPassword,
-  ensureBusinessExists,
-  checkIfBusinessMatchCardType,
+  card.getAndPassToLocals,
+  card.ensureExistance,
+  card.ensureIsNotVirtual,
+  card.ensureIsActivated,
+  card.ensureIsNotExpired,
+  card.ensureIsNotBlocked,
+  card.validatePassword,
+  business.getAndPassToLocals,
+  business.ensureExistance,
+  business.ensureMatchesCardType,
+  insertPayment,
+)
+
+paymentRouter.post(
+  "/online-payment",
+  validateSchema(onlinePaymentSchema),
+  card.getAndPassToLocals,
+  card.ensureExistance,
+  card.validateSecurityCode,
+  card.ensureIsNotExpired,
+  card.ensureIsNotBlocked,
+  business.getAndPassToLocals,
+  business.ensureExistance,
+  business.ensureMatchesCardType,
   insertPayment,
 )
 

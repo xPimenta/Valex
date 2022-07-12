@@ -1,4 +1,5 @@
 import db from "../config/database.js"
+import { InsertResult } from "../services/cardService.js"
 import { mapObjectToUpdateQuery } from "../utils/sqlUtils.js"
 
 export type TransactionTypes =
@@ -34,6 +35,15 @@ export async function findById(id: number) {
   const result = await db.query<Card, [number]>(
     "SELECT * FROM cards WHERE id=$1",
     [id],
+  )
+
+  return result.rows[0]
+}
+
+export async function findByNumber(number: string) {
+  const result = await db.query<Card, [string]>(
+    "SELECT * FROM cards WHERE number=$1",
+    [number],
   )
 
   return result.rows[0]

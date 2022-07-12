@@ -3,11 +3,12 @@ import { Request, Response } from "express"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as cardService from "../services/cardService.js"
 import * as rechargeService from "../services/rechargeService.js"
+import * as employeeRepository from "../repositories/employeeRepository.js"
 import { security } from "../utils/encryptionFunctions.js"
 
 export async function createCard(req: Request, res: Response) {
   const { cardType }: { cardType: cardRepository.TransactionTypes } = req.body
-  const { employee } = res.locals
+  const employee: employeeRepository.Employee = res.locals.employee
 
   await cardService.createCard(employee, cardType)
 
@@ -22,10 +23,6 @@ export async function setCardPassword(req: Request, res: Response) {
 
   await cardService.updateCard(card.id, { password: hashPassword })
 
-  return res.sendStatus(200)
-}
-
-export async function getEmployeeCards(req: Request, res: Response) {
   return res.sendStatus(200)
 }
 
